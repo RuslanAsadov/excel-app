@@ -54,7 +54,8 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HTMLWebpackPlugin({
-      template: 'index.html'
+      template: 'index.html',
+      watchContentBase: isDev
     }),
     new CopyPlugin({
       patterns: [
