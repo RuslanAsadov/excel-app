@@ -21,6 +21,7 @@
     border: 1px solid $boder-color
     background: #f8f9fa
     border-top: none
+    position: relative
 
   .row-data
     display: flex
@@ -36,6 +37,7 @@
     height: 100%
     border-top: 0
     border-left: 0
+    position: relative
 
   .cell
     min-width: 40px
@@ -48,8 +50,30 @@
     color: #111
     white-space: nowrap
     outline: none
-
+    position: relative
     &.selected
       border: none
-      outline: 2px solid #3c74ff
+      outline: 2px solid $primary-color
       z-index: 2
+
+  .col-resize, .row-resize
+    display: block
+    position: absolute
+    bottom: 0
+    right: 0
+    background: $primary-color
+    opacity: 0
+    z-index: 1000
+    &:hover
+      opacity: 1
+
+  .col-resize
+    top: 0
+    width: 5px
+    cursor: col-resize
+
+  .row-resize
+    left: 0
+    height: 5px
+    cursor: row-resize
+
