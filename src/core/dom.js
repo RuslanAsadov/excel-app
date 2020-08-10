@@ -40,6 +40,51 @@ class Dom {
     }
     return this
   }
+
+  get data() {
+    return this.$el.dataset
+  }
+
+  closest(selector) {
+    return $(this.$el.closest(selector))
+  }
+
+  getCoords() {
+    return this.$el.getBoundingClientRect()
+  }
+
+  find(selector) {
+    return this.$el.querySelector(selector) ? $(this.$el.querySelector(selector)) : null
+  }
+
+  findAll(selector) {
+    return this.$el.querySelectorAll(selector)
+  }
+
+  css(styles = {}) {
+    // for (const prop in styles) {
+    // if ({}.hasOwnProperty.call(styles, prop)) {
+    //   // Проверка, т.к. for-in пробегает еще и по прототипу
+    //   console.log(prop)
+    //   console.log(styles[prop])
+    //   this.$el.style[prop] = styles[prop]
+    // }
+    // }
+    Object.keys(styles).forEach(prop => {
+      this.$el.style[prop] = styles[prop]
+    })
+    return this
+  }
+
+  addClass(className = '') {
+    this.$el.classList.add(className)
+    return this
+  }
+
+  removeClass(className = '') {
+    this.$el.classList.remove(className)
+    return this
+  }
 }
 
 export function $(selector) {
