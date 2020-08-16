@@ -3,12 +3,23 @@ const CODES = {
   Z: 90
 }
 
-function toCell(_, col) {
-  return `
-    <div class="cell" contenteditable data-col="${col}">
-      <div class="resize-line"></div>
-    </div>
-  `
+// function toCell(row, col) {
+//   return `
+//     <div class="cell" contenteditable data-col="${col}" data-row="${row}">
+//       <div class="resize-line"></div>
+//     </div>
+//   `
+// }
+
+function toCell(row) {
+  // Замыкаем
+  return function(_, col) {
+    return `
+      <div class="cell" contenteditable data-col="${col}" data-id="${row}:${col}" data-type="cell">
+        <div class="resize-line"></div>
+      </div>
+    `
+  }
 }
 
 function toColumn(col, index) {
@@ -50,13 +61,14 @@ export function createTable(rowsCount = 15) {
 
   rows.push(createRow(null, cols)) // Создаем первую строку с буквами
 
-  for (let i = 0; i < rowsCount; i++) { // Проходимся п количеству строк
+  for (let row = 0; row < rowsCount; row++) { // Проходимся п количеству строк
     const cells = new Array(colsCount)
         .fill('') // Заменяем каждый элемент на ""
-        .map(toCell) // Превращаем все элементы в ячейки
+        // .map((_, col) => toCell(row, col)) // Превращаем все элементы в ячейки
+        .map(toCell(row)) // Вернет функцию, в которой замкнут индекс строки. map вставит в нее индекс колонки
         .join('')
 
-    rows.push(createRow(i + 1, cells))
+    rows.push(createRow(row + 1, cells))
   }
 
   return rows.join('')
