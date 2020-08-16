@@ -15,6 +15,17 @@ class Dom {
     return this.$el.outerHTML.trim()
   }
 
+  text(text) {
+    if (typeof text === 'string') {
+      this.$el.textContent = text
+      return this
+    }
+    if (this.$el.tagName.toLowerCase() === 'input') {
+      return this.$el.value.trim()
+    }
+    return this.$el.textContent.trim()
+  }
+
   clear() {
     // Очищает внутри селектора
     this.html('')
@@ -54,7 +65,7 @@ class Dom {
   }
 
   find(selector) {
-    return this.$el.querySelector(selector) ? $(this.$el.querySelector(selector)) : null
+    return $(this.$el.querySelector(selector))
   }
 
   findAll(selector) {
@@ -73,6 +84,23 @@ class Dom {
     Object.keys(styles).forEach(prop => {
       this.$el.style[prop] = styles[prop]
     })
+    return this
+  }
+
+  id(parse) {
+    if (parse) {
+      const parsed = this.id().split(':')
+      return {
+        row: +parsed[0],
+        col: +parsed[1]
+      }
+    } else {
+      return this.data.id
+    }
+  }
+
+  focus() {
+    this.$el.focus()
     return this
   }
 
