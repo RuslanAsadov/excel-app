@@ -1,53 +1,44 @@
-import {ExcelComponent} from '@core/ExcelComponent'
+import {ExcelStateComponent} from '@core/ExcelStateComponent'
+import {createToolbar} from '@/components/toolbar/toolbar.template'
+import {$} from '@core/dom'
+import {defaultStyles} from '@/constants'
 
-export class Toolbar extends ExcelComponent {
+export class Toolbar extends ExcelStateComponent {
   static className = 'excel__toolbar'
 
   constructor($root, options) {
     super($root, {
       name: 'Toolbar',
-      // listeners: [],
+      listeners: ['click'],
+      subscribe: ['currentStyles'],
       ...options
     })
   }
 
+  prepare() {
+    const initialState = defaultStyles
+    this.initState(initialState)
+  }
+
+  get template() {
+    // Сначала рисуется чистый тулбар, но потом подгружаются данные из стора и тулбар становится корректным
+    return createToolbar(this.state)
+  }
+
   toHTML() {
-    return `
-      <div class="button">
-            <span class="material-icons">
-              format_align_left
-            </span>
-      </div>
+    return this.template
+  }
 
-      <div class="button">
-            <span class="material-icons">
-              format_align_center
-            </span>
-      </div>
+  storeChanged(changes) {
+    // работает без задержки debounce так как подписываемся в другом месте (StoreSubscriber)
+    this.setState(changes.currentStyles)
+  }
 
-      <div class="button">
-            <span class="material-icons">
-              format_align_right
-            </span>
-      </div>
-
-      <div class="button">
-            <span class="material-icons">
-              format_bold
-            </span>
-      </div>
-
-      <div class="button">
-            <span class="material-icons">
-              format_italic
-            </span>
-      </div>
-
-      <div class="button">
-            <span class="material-icons">
-              format_underlined
-            </span>
-      </div>
-    `
+  onClick(event) {
+    const $target = $(event.target)
+    if ($target.data.type === 'button') {
+      const value = JSON.parse($target.data.value)
+      this.$emit('toolbar:applyStyle', value)
+    }
   }
 }
