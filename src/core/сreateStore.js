@@ -1,3 +1,5 @@
+import {clone} from '@core/utils'
+
 // Через функцию чтобы сделать "приватные" переменные state и listeners
 // Работаем через замыкания
 export function сreateStore(rootReducer, initialState = {}) {
@@ -21,7 +23,7 @@ export function сreateStore(rootReducer, initialState = {}) {
     },
     getState() {
       // Чтобы не было мутирования
-      return JSON.parse(JSON.stringify(state))
+      return clone(state)
     }
   }
 }
