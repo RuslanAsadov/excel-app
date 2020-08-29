@@ -1,32 +1,36 @@
-import {Page} from '@core/Page'
+import {Page} from '@core/page/Page'
 import {сreateStore} from '@core/store/сreateStore'
 import {rootReducer} from '@/redux/rootReducer'
-import {storage, debounce} from '@core/utils'
 import {normalizeInitialState} from '@/redux/initialState'
 import {Excel} from '@/components/excel/Excel'
 import {Header} from '@/components/header/Header'
 import {Toolbar} from '@/components/toolbar/Toolbar'
 import {Formula} from '@/components/formula/Formula'
 import {Table} from '@/components/table/Table'
-
-function storageName(param) {
-  return 'excel:' + param
-}
+import {StateProcessor} from '@core/page/StateProcessor'
+import {LocalStorageClient} from '@/shared/LocalStorageClient'
 
 export class ExcelPage extends Page {
-  getRoot() {
-    const params = this.params || Date.now().toString()
+  constructor(param) {
+    super(param)
+    this.storeSub = null
 
-    const state = storage(storageName(params))
+    // Принцип SOLID Dependency inversion principle
+    // Взаимодействуем с абстракциями стейта
+    this.processor = new StateProcessor(
+        // Передаем то, с чем работаем (в данном случае localStorage)
+        new LocalStorageClient(this.params)
+    )
+  }
+
+  async getRoot() {
+    // Может быть асинхронным
+    const state = await this.processor.get()
     const initialState = normalizeInitialState(state)
     const store = сreateStore(rootReducer, initialState)
 
-    const stateListener = debounce(state => {
-      storage(storageName(params), state)
-    }, 300)
-
     // Запись в localstorage
-    store.subscribe(stateListener)
+    this.storeSub = store.subscribe(this.processor.listen)
 
     this.excel = new Excel({
       components: [Header, Toolbar, Formula, Table],
@@ -42,5 +46,6 @@ export class ExcelPage extends Page {
 
   destroy() {
     this.excel.destroy()
+    this.storeSub.unsubscribe()
   }
 }
